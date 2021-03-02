@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>视频</title>
+
+<script type="text/javascript" src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js"></script>
+	</head>
+
+	<body>
+<iframe src="" style="border:0;" id="player"> </iframe>
+<h2 id="ts"></h2>
+<h3 id="sl"></h3>
+<ul id="myList"></ul>
+	</body>
+<script>
+//ajax访问
+$(document).ready(function(){
+if(getd("s")==''){alert("参数不足！");window.history.go(-1);}else{
+
+  $.post("http://www.kuyunzy.tv"+decodeURIComponent(getd("s")),
+    {},
+    function(data,status){
+	
+	//console.log(data);
+	//抓取数据区域
+      res=qzj(data,"<h1>播放来源:kkyun</h1>","复制选中的集数");
+	  
+	  //结果区域分割为数组
+	res=fgsz(res);
+	//循环切割数组里的内容并储存在二维数组
+	res=jxsz(res);
+	//console.log(res);
+	//写入dom
+    tjnr(res);
+	//默认播放第一集
+	play("video0");
+	  
+	  
+    });
+
+
+}
+  
+
+});
+
+
+//分割为数组
+function fgsz(str){
+fh=str.split('<!--分集名开始CD1分集名结束-->');
+fh.pop();
+//console.log(fh);
+return fh;
+}
+
+//循环获取内容
+function jxsz(str){
+var arr = new Array();
+
+for (var  i=0;i<str.length;i++){
+arr[i] = new Array();
+	arr[i][1]=qzj(str[i],'集$','</a>');
+	arr[i][2]=qzj(str[i],'<a>','$http');
+	//console.log(arr[i]);
+}
+return arr;
+}
+
+
+//添加内容到div
+function tjnr(str){
+$('#sl').append('共有'+str.length+'集');
+for (var  i=0;i<str.length;i++){
+$('#myList').append('<li class="tlis"><a href="javascript:void(0);" id="video'+i+'" onclick="play('+"'"+'video'+i+"'"+')" data="'+encodeURIComponent(str[i][1])+'">'+str[i][2]+'</a></li>');
+}
+}
+
+//播放
+function play(name){
+//console.log($("#"+name).attr("data"));
+$("#player").attr("src",decodeURIComponent($("#"+name).attr("data")))
+}
+
+
+
+
+
+//取文本中间
+function qzj(str, leftStr, rightStr){
+var left =  str.indexOf(leftStr);
+var right =  str.indexOf(rightStr,left);
+if(left < 0 || right < left){return ''; }
+return str.substring(left+leftStr.length,right);
+}
+
+//获取get数据
+function getd(variable)
+{
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
+
+
+
+</script>
+
+
+
+</html>
+
