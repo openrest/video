@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>视频</title>
+
+<script type="text/javascript" src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js"></script>
+	</head>
+
+	<body>
+	<input type="text" name="wd" id="nnr" placeholder="请输入名字" />
+<button>搜索</button>
+<h3 id="sl"></h3>
+<ul id="myList"></ul>
+	</body>
+<script>
+//ajax访问
+$(document).ready(function(){
+  $("button").click(function(){
+  if($("input#nnr").val()==''){return;}
+  $("#sl").html("搜索中");
+    $.post("http://www.kuyunzy.tv/index.php?m=vod-search",
+    {
+      wd:$("input#nnr").val(),
+    },
+    function(data,status){
+	//console.log(qzj(data,"影片列表开始--\>","<\!--影片列表结束"));
+	//console.log(data);
+	//获取结果区域
+	res=qzj(data,"影片列表开始--\>","<\!--影片列表结束");
+	//结果区域分割为数组
+	res=fgsz(res);
+	//循环切割数组里的内容并储存在二维数组
+	res=jxsz(res);
+	//console.log(res);
+	//写入dom
+    tjnr(res);
+      
+	  
+	  
+	  
+    });
+  });
+});
+
+
+//分割为数组
+function fgsz(str){
+fh=str.split('<td align="center"><font color="#FF0000">');
+fh.pop();
+//console.log(fh);
+return fh;
+}
+
+//循环获取内容
+function jxsz(str){
+var arr = new Array();
+
+for (var  i=0;i<str.length;i++){
+arr[i] = new Array();
+	arr[i][1]=qzj(str[i],'<td height="25" align="left"><a href="','" target="_blank">');
+	arr[i][2]=qzj(str[i],'target="_blank">','</a></td>');
+	//console.log(arr[i]);
+}
+return arr;
+}
+
+
+//添加内容到div
+function tjnr(str){
+
+$("#sl").html('共有'+str.length+'条结果');
+for (var  i=0;i<str.length;i++){
+$('#myList').append('<li class="tlis"><a href="./s.html?s='+encodeURIComponent(str[i][1])+'">'+str[i][2]+'</a></li>');
+
+
+}
+
+}
+
+
+
+
+
+//取文本中间
+function qzj(str, leftStr, rightStr){
+var left =  str.indexOf(leftStr);
+var right =  str.indexOf(rightStr,left);
+if(left < 0 || right < left){return ''; }
+return str.substring(left+leftStr.length,right);
+}
+
+
+
+
+
+
+</script>
+
+
+
+</html>
+
